@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "lib": ["es2018", "dom", "scripthost"],
+    "target": "es5"
+  }
+}

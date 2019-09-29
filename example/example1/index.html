@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+      }
+      .test {
+        width: 100%;
+        height: 100%;
+        display: flex;
+      }
+      .scroll-sensor {
+        width: 200px;
+        height: 500px;
+        background-color: skyblue;
+      }
+      .content {
+        flex-grow: 1;
+        overflow: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="test">
+      <div class="content"></div>
+      <div class="scroll-sensor"></div>
+    </div>
+
+    <script src="../../dist/scroll-sensor.js"></script>
+    <script>
+      let content = '';
+      for (let i = 0; i < 1000; i++) {
+        const color = `#${parseInt(Math.random() * 16777216).toString(16)}`;
+        content += `<div style="background-color:${color}">hello</div>`;
+      }
+      document.querySelector('.content').innerHTML = content;
+    </script>
+    <script>
+      const dom_content = document.querySelector('.content');
+      const scrollSensor = new ScrollSensor({ element: document.querySelector('.scroll-sensor') });
+      scrollSensor.on('scroll', event => {
+        console.log(event);
+        dom_content.scrollTop = event.scrollTop;
+      });
+    </script>
+  </body>
+</html>
