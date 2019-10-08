@@ -33,6 +33,7 @@
     "webpack-merge": "^4.2.1"
   },
   "dependencies": {
+    "@types/events": "^3.0.0",
     "events": "^3.0.0"
   }
 }

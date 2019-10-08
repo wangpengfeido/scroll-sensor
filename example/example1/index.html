@@ -24,6 +24,7 @@
         background-color: skyblue;
       }
       .content {
+        width: 0;
         flex-grow: 1;
         overflow: auto;
       }
@@ -39,17 +40,29 @@
     <script>
       let content = '';
       for (let i = 0; i < 1000; i++) {
-        const color = `#${parseInt(Math.random() * 16777216).toString(16)}`;
-        content += `<div style="background-color:${color}">hello</div>`;
+        const color1 = `#${parseInt(Math.random() * 16777216).toString(16)}`;
+        const color2 = `#${parseInt(Math.random() * 16777216).toString(16)}`;
+        content += `<div style="background:linear-gradient(to right, ${color1} , ${color2});width:2000px;">hello</div>`;
       }
       document.querySelector('.content').innerHTML = content;
     </script>
     <script>
       const dom_content = document.querySelector('.content');
-      const scrollSensor = new ScrollSensor({ element: document.querySelector('.scroll-sensor') });
+      const scrollSensor = new ScrollSensor({
+        element: document.querySelector('.scroll-sensor'),
+        options: {
+          mouseWheelInertiaXDeceleration: 5000,
+          mouseWheelInertiaYDeceleration: 5000,
+          mouseMoveInertiaXDeceleration: 5000,
+          mouseMoveInertiaYDeceleration: 5000,
+          touchInertiaXDeceleration: 5000,
+          touchInertiaYDeceleration: 5000,
+        },
+      });
       scrollSensor.on('scroll', event => {
         console.log(event);
         dom_content.scrollTop = event.scrollTop;
+        dom_content.scrollLeft = event.scrollLeft;
       });
     </script>
   </body>

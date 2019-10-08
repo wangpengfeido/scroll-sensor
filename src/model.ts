@@ -1,13 +1,24 @@
 export interface OptionsInterface {
-  mouseMoveIsEnable?: boolean;
   mouseWheelIsEnable?: boolean;
+  mouseWheelXSpeed?: number;
+  mouseWheelYSpeed?: number;
+
+  mouseMoveIsEnable?: boolean;
+  mouseMoveXSpeed?: number;
+  mouseMoveYSpeed?: number;
+  mouseMoveInertiaXDeceleration?: number;
+  mouseMoveInertiaYDeceleration?: number;
+  mouseMoveInertiaXMaxSpeed?: number;
+  mouseMoveInertiaYMaxSpeed?: number;
+
   touchIsEnable?: boolean;
-  xMouseMoveSpeed?: number;
-  yMouseMoveSpeed?: number;
-  xMouseWheelSpeed?: number;
-  yMouseWheelSpeed?: number;
-  xTouchSpeed?: number;
-  yTouchSpeed?: number;
+  touchXSpeed?: number;
+  touchYSpeed?: number;
+  touchInertiaXDeceleration?: number;
+  touchInertiaYDeceleration?: number;
+  touchInertiaXMaxSpeed?: number;
+  touchInertiaYMaxSpeed?: number;
+
   minScrollTop?: number;
   minScrollLeft?: number;
   maxScrollTop?: number;
@@ -15,30 +26,53 @@ export interface OptionsInterface {
 }
 
 export class Options implements OptionsInterface {
-  public mouseMoveIsEnable;
   public mouseWheelIsEnable;
+  public mouseWheelXSpeed;
+  public mouseWheelYSpeed;
+
+  public mouseMoveIsEnable;
+  public mouseMoveXSpeed;
+  public mouseMoveYSpeed;
+  public mouseMoveInertiaXDeceleration;
+  public mouseMoveInertiaYDeceleration;
+  public mouseMoveInertiaXMaxSpeed;
+  public mouseMoveInertiaYMaxSpeed;
+
   public touchIsEnable;
-  public xMouseMoveSpeed;
-  public yMouseMoveSpeed;
-  public xMouseWheelSpeed;
-  public yMouseWheelSpeed;
-  public xTouchSpeed;
-  public yTouchSpeed;
+  public touchXSpeed;
+  public touchYSpeed;
+  public touchInertiaXDeceleration;
+  public touchInertiaYDeceleration;
+  public touchInertiaXMaxSpeed;
+  public touchInertiaYMaxSpeed;
+
   public minScrollTop;
   public minScrollLeft;
   public maxScrollTop;
   public maxScrollLeft;
 
   public constructor(options: OptionsInterface) {
-    this.mouseMoveIsEnable = options.mouseMoveIsEnable || true;
     this.mouseWheelIsEnable = options.mouseWheelIsEnable || true;
+    this.mouseWheelXSpeed = options.mouseWheelXSpeed || 1;
+    this.mouseWheelYSpeed = options.mouseWheelYSpeed || 1;
+
+    this.mouseMoveIsEnable = options.mouseMoveIsEnable || true;
+    this.mouseMoveXSpeed = options.mouseMoveXSpeed || 1;
+    this.mouseMoveYSpeed = options.mouseMoveYSpeed || 1;
+    this.mouseMoveInertiaXDeceleration = options.mouseMoveInertiaXDeceleration || Infinity;
+    this.mouseMoveInertiaYDeceleration = options.mouseMoveInertiaYDeceleration || Infinity;
+    this.mouseMoveInertiaXMaxSpeed = options.mouseMoveInertiaXMaxSpeed || this.mouseMoveInertiaXDeceleration
+    this.mouseMoveInertiaYMaxSpeed = options.mouseMoveInertiaYMaxSpeed || this.mouseMoveInertiaYDeceleration
+
     this.touchIsEnable = options.touchIsEnable || true;
-    this.xMouseMoveSpeed = options.xMouseMoveSpeed || 1;
-    this.yMouseMoveSpeed = options.yMouseMoveSpeed || 1;
-    this.xMouseWheelSpeed = options.xMouseWheelSpeed || 1;
-    this.yMouseWheelSpeed = options.yMouseWheelSpeed || 1;
-    this.xTouchSpeed = options.xTouchSpeed || 1;
-    this.yTouchSpeed = options.yTouchSpeed || 1;
+    this.touchXSpeed = options.touchXSpeed || 1;
+    this.touchYSpeed = options.touchYSpeed || 1;
+    this.touchInertiaXDeceleration = options.touchInertiaXDeceleration || Infinity;
+    this.touchInertiaYDeceleration = options.touchInertiaYDeceleration || Infinity;
+    this.touchInertiaXMaxSpeed = options.touchInertiaXMaxSpeed || this.touchInertiaXDeceleration;
+    this.touchInertiaYMaxSpeed = options.touchInertiaYMaxSpeed || this.touchInertiaYDeceleration;
+
+
     this.minScrollTop = options.minScrollTop || 0;
     this.minScrollLeft = options.minScrollLeft || 0;
     this.maxScrollTop = options.maxScrollTop || Infinity;
