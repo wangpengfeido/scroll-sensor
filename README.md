@@ -22,7 +22,7 @@ import {ScrollSensor} from 'scroll-sensor';
 
 ### Include by script tag
 ````html
-<script src="xxx"><script>
+<script src="https://unpkg.com/scroll-sensor/dist/scroll-sensor.min.js"><script>
 ````
 
 ## Simple usage
