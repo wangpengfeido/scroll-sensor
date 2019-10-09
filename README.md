@@ -5,7 +5,7 @@ Scroll Sensor simulate scroll bar on a not scrollable dom.It has features of mou
 
 You can know user's scroll behavior by listening events.It is very useful in canvas animation and other field. 
 
-Here is a [Demo]().
+Here is a [Demo](https://wangpengfeido.github.io/demos/scroll-sensor/index.html).
 
 ## Install and import
 Scroll Sensor can be installed by npm or yarn.It can be imported by ES6 import grammar,commonJs grammar or including by script tag.
@@ -22,7 +22,7 @@ import {ScrollSensor} from 'scroll-sensor';
 
 ### Include by script tag
 ````html
-<script src="https://unpkg.com/scroll-sensor/dist/scroll-sensor.min.js"><script>
+<script src="https://unpkg.com/scroll-sensor@latest/dist/scroll-sensor.min.js"><script>
 ````
 
 ## Simple usage
@@ -70,7 +70,7 @@ A event object will pass to the event listener.It has for properties.
 * **scrollX/scrollY** ````<number>```` Pixel distance of this scroll on x-axis and y-axis.
 
 ## Options
-Options of Scroll Sensor.It passed by [constructor](#scrollsensorelementoptionsinitialscrolltopinitialscrollleft})) or [setOptions](scrollsensorsetoptionsoptions) method.
+Options of Scroll Sensor.It passed by [constructor](#scrollsensorelementoptionsinitialscrolltopinitialscrollleft}) or [setOptions](#scrollsensorsetoptionsoptions) method.
 
 ### mouseWheelIsEnable/mouseMoveIsEnable/touchIsEnable
 * type: ````<boolean>````

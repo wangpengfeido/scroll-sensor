@@ -34,10 +34,10 @@ export class ScrollSensor extends EventEmitter {
     if (!(element instanceof HTMLElement)) {
       throw new Error('"element" param is must an instance of HTMLElement');
     }
+    this.setOptions(options);
     this.element = element;
     this.scrollTop = initialScrollTop;
     this.scrollLeft = initialScrollLeft;
-    this.setOptions(options);
 
     this.element.addEventListener('mousewheel', this.handleMousewheel);
     this.element.addEventListener('mousedown', this.handleMouseDown);
@@ -78,11 +78,11 @@ export class ScrollSensor extends EventEmitter {
 
   public set scrollLeft(scrollLeft) {
     if (scrollLeft < this.options.minScrollLeft) {
-      this.scrollLeft = this.options.minScrollLeft;
+      this._scrollLeft = this.options.minScrollLeft;
     } else if (scrollLeft > this.options.maxScrollLeft) {
-      this.scrollLeft = this.options.maxScrollLeft;
+      this._scrollLeft = this.options.maxScrollLeft;
     } else {
-      this.scrollLeft = scrollLeft;
+      this._scrollLeft = scrollLeft;
     }
   }
 
