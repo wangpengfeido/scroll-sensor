@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Document</title>
+    <title>Scroll Sensor Demo</title>
     <style>
       html,
       body {
@@ -22,6 +22,7 @@
         width: 200px;
         height: 500px;
         background-color: skyblue;
+        user-select: none;
       }
       .content {
         width: 0;
@@ -33,7 +34,7 @@
   <body>
     <div class="test">
       <div class="content"></div>
-      <div class="scroll-sensor"></div>
+      <div class="scroll-sensor">scroll,drag,or touch here</div>
     </div>
 
     <script src="../../dist/scroll-sensor.js"></script>
@@ -51,6 +52,8 @@
       const scrollSensor = new ScrollSensor({
         element: document.querySelector('.scroll-sensor'),
         options: {
+          maxScrollLeft: dom_content.scrollWidth - dom_content.clientWidth,
+          maxScrollTop: dom_content.scrollHeight - dom_content.clientHeight,
           mouseWheelInertiaXDeceleration: 5000,
           mouseWheelInertiaYDeceleration: 5000,
           mouseMoveInertiaXDeceleration: 5000,

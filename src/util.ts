@@ -1,12 +1,27 @@
 import { EventEmitter } from 'events';
 
+/**
+ * Get positive and negative sign of a number.
+ */
+export function getSign(num: number): number {
+  if (num > 0) {
+    return 1;
+  } else if (num < 0) {
+    return -1;
+  } else if (num === 0) {
+    return 0;
+  } else {
+    return NaN;
+  }
+}
+
 class PositionStore {
   private positions: [Date, number][] = [];
 
   public constructor(public endTimeRange) {
   }
 
-  private filterPositions() {
+  private filterPositions(): void {
     const now = new Date();
     this.positions = this.positions.filter((item: [Date, number]): boolean => {
       return now.getTime() - item[0].getTime() <= this.endTimeRange;
@@ -31,11 +46,16 @@ class PositionStore {
     return (end[1] - start[1]) / ((end[0].getTime() - start[0].getTime()) / 1000);
   }
 
-  public clear() {
+  public clear(): void {
     this.positions = [];
   }
 }
 
+/**
+ * A util to deal scroll end inertia.
+ * @event inertiaMove Be emitted continuously after call "end" method, until the speed drop to 0.
+ *         Its event object has four property:xSpeed,ySpeed,xDistance,yDistance.
+ */
 export class EndInertiaUtil extends EventEmitter {
 
   private xPositionStore: PositionStore;
@@ -66,19 +86,33 @@ export class EndInertiaUtil extends EventEmitter {
     this.yDecelerationPerSecond = yDecelerationPerSecond;
   }
 
+  public setXMaxSpeed(xMaxSpeed): void {
+    this.xMaxSpeed = xMaxSpeed;
+  }
+
+  public setYMaxSpeed(yMaxSpeed): void {
+    this.yMaxSpeed = yMaxSpeed;
+  }
+
+  /**
+   * Push a move position.It will be used to calculate the end speed.
+   */
   public push(positionX: number, positionY: number): void {
     this.xPositionStore.push(positionX);
     this.yPositionStore.push(positionY);
   }
 
+  /**
+   * End a series of position push and start to calculate inertia move distance and emit "inertiaMove" event.
+   */
   public end(): void {
     if (this.timer) {
       window.clearInterval(this.timer);
     }
-    const originalXSpeed = this.xPositionStore.getEndSpeed()
-    const originalYSpeed = this.yPositionStore.getEndSpeed()
-    const xDecelerationPerSecond = originalXSpeed >= 0 ? this.xDecelerationPerSecond : -this.xDecelerationPerSecond;
-    const yDecelerationPerSecond = originalYSpeed >= 0 ? this.yDecelerationPerSecond : -this.yDecelerationPerSecond;
+    const originalXSpeed = this.dealOriginalSpeed(this.xPositionStore.getEndSpeed(), this.xMaxSpeed);
+    const originalYSpeed = this.dealOriginalSpeed(this.yPositionStore.getEndSpeed(), this.yMaxSpeed);
+    const xDecelerationPerSecond = getSign(originalXSpeed) === 0 ? 0 : getSign(originalXSpeed) * this.xDecelerationPerSecond;
+    const yDecelerationPerSecond = getSign(originalYSpeed) === 0 ? 0 : getSign(originalYSpeed) * this.yDecelerationPerSecond;
     let xSpeed = originalXSpeed;
     let ySpeed = originalYSpeed;
     let time = Date.now();
@@ -109,10 +143,24 @@ export class EndInertiaUtil extends EventEmitter {
     });
   }
 
+  /**
+   * Stop the inertia move.
+   * It also stop to emit the "inertiaMove" event.
+   */
   public stop(): void {
     this.xPositionStore.clear();
     this.yPositionStore.clear();
     window.clearInterval(this.timer);
     this.timer = null;
   }
+
+  private dealOriginalSpeed(speed: number, maxSpeed: number): number {
+    if (Math.abs(speed) > maxSpeed) {
+      return getSign(speed) * maxSpeed;
+    } else {
+      return speed;
+    }
+  }
 }
+
+

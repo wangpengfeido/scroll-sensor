@@ -12,6 +12,7 @@
   "rules": {
     "@typescript-eslint/indent": ["error", 2],
     "@typescript-eslint/no-parameter-properties": "off",
+    "@typescript-eslint/no-explicit-any": "off",
     "prefer-const": "off",
     "no-parameter-properties": "off"
   }

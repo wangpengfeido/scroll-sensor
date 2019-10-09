@@ -3,12 +3,16 @@ import { EventEmitter } from 'events';
 import { OptionsInterface, Options, ScrollEventObject } from './model'
 import { EndInertiaUtil } from './util';
 
+/**
+ * Scroll sensor main class
+ * @event scroll Emit when scroll.
+ */
 export class ScrollSensor extends EventEmitter {
   private element: HTMLElement;
   private options: Options;
 
-  private scrollTop: number;
-  private scrollLeft: number;
+  private _scrollTop: number;
+  private _scrollLeft: number;
 
   private mouseIsScrolling: boolean = false;
   private mouseXLastPosition: number;
@@ -19,6 +23,12 @@ export class ScrollSensor extends EventEmitter {
   private touchYLastPosition: number;
   private touchEndInertiaUtil = new EndInertiaUtil();
 
+  /**
+   * @param {HTMLElement} element The dom element to create the ScrollSensor instance.
+   * @param {OptionsInterface} options Options.
+   * @param {number} initialScrollTop
+   * @param {number} initialScrollLeft
+   */
   public constructor({ element, options = {}, initialScrollTop = 0, initialScrollLeft = 0 }: { element: HTMLElement; options: OptionsInterface; initialScrollTop: number; initialScrollLeft: number }) {
     super();
     if (!(element instanceof HTMLElement)) {
@@ -40,25 +50,33 @@ export class ScrollSensor extends EventEmitter {
     this.touchEndInertiaUtil.on('inertiaMove', this.handleInertiaMove);
   }
 
-  public setOptions(options: OptionsInterface): void {
+  public setOptions(options: OptionsInterface = {}): void {
     this.options = new Options(options);
     this.mouseScrollEndInertiaUtil.setXDecelerationPerSecond(this.options.mouseMoveInertiaXDeceleration);
     this.mouseScrollEndInertiaUtil.setYDecelerationPerSecond(this.options.mouseMoveInertiaYDeceleration);
+    this.mouseScrollEndInertiaUtil.setXMaxSpeed(this.options.mouseMoveInertiaXMaxSpeed);
+    this.mouseScrollEndInertiaUtil.setYMaxSpeed(this.options.mouseMoveInertiaYMaxSpeed);
     this.touchEndInertiaUtil.setXDecelerationPerSecond(this.options.touchInertiaXDeceleration);
     this.touchEndInertiaUtil.setYDecelerationPerSecond(this.options.touchInertiaYDeceleration);
+    this.touchEndInertiaUtil.setXMaxSpeed(this.options.touchInertiaXMaxSpeed);
+    this.touchEndInertiaUtil.setYMaxSpeed(this.options.touchInertiaYMaxSpeed);
   }
 
-  public setScrollTop(scrollTop) {
+  public set scrollTop(scrollTop) {
     if (scrollTop < this.options.minScrollTop) {
-      this.scrollTop = this.options.minScrollTop;
+      this._scrollTop = this.options.minScrollTop;
     } else if (scrollTop > this.options.maxScrollTop) {
-      this.scrollTop = this.options.maxScrollTop;
+      this._scrollTop = this.options.maxScrollTop;
     } else {
-      this.scrollTop = scrollTop;
+      this._scrollTop = scrollTop;
     }
   }
 
-  public setScrollLeft(scrollLeft) {
+  public get scrollTop(): number {
+    return this._scrollTop;
+  }
+
+  public set scrollLeft(scrollLeft) {
     if (scrollLeft < this.options.minScrollLeft) {
       this.scrollLeft = this.options.minScrollLeft;
     } else if (scrollLeft > this.options.maxScrollLeft) {
@@ -68,40 +86,71 @@ export class ScrollSensor extends EventEmitter {
     }
   }
 
-  private handleMousewheel = (event) => {
-    this.move(event.deltaX, event.deltaY);
+  public get scrollLeft(): number {
+    return this._scrollLeft;
   }
 
-  private handleMouseDown = (event) => {
+  /**
+   * Release the resources.
+   */
+  public destroy(): void {
+    this.mouseScrollEndInertiaUtil.removeAllListeners();
+    this.touchEndInertiaUtil.removeAllListeners();
+    this.element.removeEventListener('mousewheel', this.handleMousewheel);
+    this.element.removeEventListener('mousedown', this.handleMouseDown);
+    this.element.removeEventListener('mousemove', this.handleMouseMove);
+    this.element.removeEventListener('mouseup', this.handleMouseUp);
+    this.element.removeEventListener('touchstart', this.handleTouchStart);
+    this.element.removeEventListener('touchmove', this.handleTouchMove);
+    this.element.removeEventListener('touchend', this.handleTouchEnd);
+  }
+
+  private handleMousewheel = (event): void => {
+    if (!this.options.mouseWheelIsEnable) {
+      return;
+    }
+    this.move(event.deltaX * this.options.mouseWheelXSpeed, event.deltaY * this.options.mouseWheelYSpeed);
+  }
+
+  private handleMouseDown = (event): void => {
+    if (!this.options.mouseMoveIsEnable) {
+      return;
+    }
     this.mouseXLastPosition = event.clientX;
     this.mouseYLastPosition = event.clientY;
     this.mouseIsScrolling = true;
     this.mouseScrollEndInertiaUtil.stop();
   }
 
-  private handleMouseMove = (event) => {
+  private handleMouseMove = (event): void => {
     if (this.mouseIsScrolling) {
       const xDistance = this.mouseXLastPosition - event.clientX;
       const yDistance = this.mouseYLastPosition - event.clientY;
-      this.move(xDistance, yDistance)
+      this.move(xDistance * this.options.mouseMoveXSpeed, yDistance * this.options.mouseMoveYSpeed);
       this.mouseXLastPosition = event.clientX;
       this.mouseYLastPosition = event.clientY;
       this.mouseScrollEndInertiaUtil.push(this.scrollLeft, this.scrollTop);
     }
   }
 
-  private handleMouseUp = (event) => {
+  private handleMouseUp = (): void => {
     this.mouseIsScrolling = false;
     this.mouseScrollEndInertiaUtil.end();
   }
 
-  private handleTouchStart = (event) => {
+  private handleTouchStart = (event): void => {
+    if (!this.options.touchIsEnable) {
+      return;
+    }
     this.touchXLastPosition = Math.round(event.touches[0].clientX);
     this.touchYLastPosition = Math.round(event.touches[0].clientY);
     this.touchEndInertiaUtil.stop();
   }
 
-  private handleTouchMove = (event) => {
+  private handleTouchMove = (event): void => {
+    if (!this.options.touchIsEnable) {
+      return;
+    }
     const clientX = Math.round(event.touches[0].clientX);
     const clientY = Math.round(event.touches[0].clientY);
     const xDistance = this.touchXLastPosition - clientX;
@@ -112,17 +161,17 @@ export class ScrollSensor extends EventEmitter {
     this.touchEndInertiaUtil.push(this.scrollLeft, this.scrollTop);
   }
 
-  private handleTouchEnd = (event) => {
+  private handleTouchEnd = (): void => {
     this.touchEndInertiaUtil.end();
   }
 
-  private handleInertiaMove = (event) => {
+  private handleInertiaMove = (event): void => {
     this.move(event.xDistance, event.yDistance);
   }
 
-  private move(xDistance, yDistance) {
-    this.setScrollLeft(this.scrollLeft + xDistance);
-    this.setScrollTop(this.scrollTop + yDistance);
+  private move(xDistance, yDistance): void {
+    this.scrollLeft = this.scrollLeft + xDistance;
+    this.scrollTop = this.scrollTop + yDistance;
     const eventObject = new ScrollEventObject(this.scrollTop, this.scrollLeft, yDistance, xDistance);
     this.emit('scroll', eventObject);
   }
