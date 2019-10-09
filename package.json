@@ -1,6 +1,6 @@
 {
   "name": "scroll-sensor",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Scroll Sensor simulate scroll bar on a not scrollable dom.It has features of mouse wheel, mouse down move, touch move and scroll inertia.",
   "keywords": [
     "scroll",
