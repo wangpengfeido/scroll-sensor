@@ -8,13 +8,13 @@ module.exports = {
     libraryTarget: 'umd',
   },
   resolve: {
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js'],
   },
   module: {
     rules: [
       {
         test: /\.ts$/,
-        use: [{loader: 'babel-loader'}, {loader: 'eslint-loader'}],
+        use: [{ loader: 'babel-loader' }, { loader: 'eslint-loader' }],
       },
     ],
   },

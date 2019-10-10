@@ -1,6 +1,6 @@
 {
   "name": "scroll-sensor",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Scroll Sensor simulate scroll bar on a not scrollable dom.It has features of mouse wheel, mouse down move, touch move and scroll inertia.",
   "keywords": [
     "scroll",
@@ -10,10 +10,11 @@
     "wheel",
     "touch"
   ],
-  "main": "dist/scroll-sensor.js",
+  "main": "dist/scroll-sensor.external.js",
   "scripts": {
     "dev": "webpack --config ./build/webpack.config.dev.js",
     "build": "webpack --config ./build/webpack.config.prod.js",
+    "external-build": "webpack --config ./build/webpack.config.external.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

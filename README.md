@@ -8,7 +8,7 @@ You can know user's scroll behavior by listening events.It is very useful in can
 Here is a [Demo](https://wangpengfeido.github.io/demos/scroll-sensor/index.html).
 
 ## Install and import
-Scroll Sensor can be installed by npm or yarn.It can be imported by ES6 import grammar,commonJs grammar or including by script tag.
+Scroll Sensor can be installed by npm or yarn.And it can be imported by ES6 import grammar,commonJs grammar or including by script tag.
 
 ### Install by NPM
 ````shell
@@ -40,7 +40,7 @@ scrollSensor.on('scroll', event => {
 Main class of scroll-sensor.Call it by "new" to create a scroll-sensor instance.
 * **element** ````<HTMLElement>```` The dom element to create scroll-sensor instance.User's scroll behavior on it will be listened.
 * **options** ````<OptionsInterface>```` Options.See detail of [options](#options) below.It is optional.
-* **initialScrollTop** ````<number>```` Set the initial [scroll top]
+* **initialScrollTop** ````<number>```` Set the initial [scroll top](#scrollsensorscrolltopscrollsensorscrollleft).
 * **initialScrollLeft** ````<number>```` Set the initial [scroll left](#scrollsensorscrolltopscrollsensorscrollleft).
 
 ### scrollSensor.scrollTop/scrollSensor.scrollLeft
@@ -70,7 +70,7 @@ A event object will pass to the event listener.It has for properties.
 * **scrollX/scrollY** ````<number>```` Pixel distance of this scroll on x-axis and y-axis.
 
 ## Options
-Options of Scroll Sensor.It passed by [constructor](#scrollsensorelementoptionsinitialscrolltopinitialscrollleft}) or [setOptions](#scrollsensorsetoptionsoptions) method.
+Options of Scroll Sensor.It passed by [constructor](#scrollsensorelementoptionsinitialscrolltopinitialscrollleft) or [setOptions](#scrollsensorsetoptionsoptions) method.
 
 ### mouseWheelIsEnable/mouseMoveIsEnable/touchIsEnable
 * type: ````<boolean>````
