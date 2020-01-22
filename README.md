@@ -48,7 +48,7 @@ Main class of scroll-sensor.Call it by "new" to create a scroll-sensor instance.
 
 These two properties get or set total scroll distance vertically and horizontally.
 
-They like [Element.scrollTop](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollTop) and [Element.scrollLeft](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollLeft)
+They are like [Element.scrollTop](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollTop) and [Element.scrollLeft](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollLeft)
 
 ### scrollSensor.setOptions(options)
 Reset the options.
