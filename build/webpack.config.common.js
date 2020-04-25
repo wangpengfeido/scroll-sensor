@@ -4,12 +4,22 @@ const baseConfig = require('./webpack.config.base.js');
 
 const config = webpackMerge(baseConfig, {
   output: {
-    filename: '[name].external.js',
+    filename: '[name].common.js',
+    libraryTarget: 'commonjs2',
   },
   externals: {
     events: 'events',
   },
-  mode: 'development',
+  mode: 'production',
+  performance: {
+    hints: false,
+  },
+  stats: {
+    children: false,
+  },
+  optimization: {
+    minimize: false,
+  },
 });
 
 module.exports = config;
