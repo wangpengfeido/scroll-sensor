@@ -29,8 +29,9 @@
   },
   "homepage": "https://github.com/wangpengfeido/scroll-sensor#readme",
   "devDependencies": {
-    "@babel/core": "^7.5.5",
+    "@babel/core": "^7.9.0",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-env": "^7.9.5",
     "@babel/preset-typescript": "^7.3.3",
     "@typescript-eslint/eslint-plugin": "^1.13.0",
     "@typescript-eslint/parser": "^1.13.0",
@@ -44,6 +45,7 @@
   },
   "dependencies": {
     "@types/events": "^3.0.0",
-    "events": "^3.0.0"
+    "events": "^3.0.0",
+    "ts-loader": "^7.0.1"
   }
 }

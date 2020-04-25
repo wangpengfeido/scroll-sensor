@@ -13,8 +13,12 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.js$/,
+        use: [{ loader: 'babel-loader' }],
+      },
+      {
         test: /\.ts$/,
-        use: [{ loader: 'babel-loader' }, { loader: 'eslint-loader' }],
+        use: [{ loader: 'ts-loader' }, { loader: 'eslint-loader' }],
       },
     ],
   },

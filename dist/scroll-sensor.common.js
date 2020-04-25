@@ -93,486 +93,432 @@ module.exports = require("events");
 
 /***/ }),
 /* 1 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-__webpack_require__.r(__webpack_exports__);
 
-// EXTERNAL MODULE: external "events"
-var external_events_ = __webpack_require__(0);
-
-// CONCATENATED MODULE: ./src/model.ts
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-class Options {
-  constructor(options = {}) {
-    _defineProperty(this, "mouseWheelIsEnable", void 0);
-
-    _defineProperty(this, "mouseWheelXSpeed", void 0);
-
-    _defineProperty(this, "mouseWheelYSpeed", void 0);
-
-    _defineProperty(this, "mouseMoveIsEnable", void 0);
-
-    _defineProperty(this, "mouseMoveXSpeed", void 0);
-
-    _defineProperty(this, "mouseMoveYSpeed", void 0);
-
-    _defineProperty(this, "mouseMoveInertiaXDeceleration", void 0);
-
-    _defineProperty(this, "mouseMoveInertiaYDeceleration", void 0);
-
-    _defineProperty(this, "mouseMoveInertiaXMaxSpeed", void 0);
-
-    _defineProperty(this, "mouseMoveInertiaYMaxSpeed", void 0);
-
-    _defineProperty(this, "touchIsEnable", void 0);
-
-    _defineProperty(this, "touchXSpeed", void 0);
-
-    _defineProperty(this, "touchYSpeed", void 0);
-
-    _defineProperty(this, "touchInertiaXDeceleration", void 0);
-
-    _defineProperty(this, "touchInertiaYDeceleration", void 0);
-
-    _defineProperty(this, "touchInertiaXMaxSpeed", void 0);
-
-    _defineProperty(this, "touchInertiaYMaxSpeed", void 0);
-
-    _defineProperty(this, "minScrollTop", void 0);
-
-    _defineProperty(this, "minScrollLeft", void 0);
-
-    _defineProperty(this, "maxScrollTop", void 0);
-
-    _defineProperty(this, "maxScrollLeft", void 0);
-
-    this.mouseWheelIsEnable = this.dealParam(options.mouseWheelIsEnable, true);
-    this.mouseWheelXSpeed = this.dealParam(options.mouseWheelXSpeed, 1);
-    this.mouseWheelYSpeed = this.dealParam(options.mouseWheelYSpeed, 1);
-    this.mouseMoveIsEnable = this.dealParam(options.mouseMoveIsEnable, true);
-    this.mouseMoveXSpeed = this.dealParam(options.mouseMoveXSpeed, 1);
-    this.mouseMoveYSpeed = this.dealParam(options.mouseMoveYSpeed, 1);
-    this.mouseMoveInertiaXDeceleration = this.dealParam(options.mouseMoveInertiaXDeceleration, Infinity);
-    this.mouseMoveInertiaYDeceleration = this.dealParam(options.mouseMoveInertiaYDeceleration, Infinity);
-    this.mouseMoveInertiaXMaxSpeed = this.dealParam(options.mouseMoveInertiaXMaxSpeed, this.mouseMoveInertiaXDeceleration);
-    this.mouseMoveInertiaYMaxSpeed = this.dealParam(options.mouseMoveInertiaYMaxSpeed, this.mouseMoveInertiaYDeceleration);
-    this.touchIsEnable = this.dealParam(options.touchIsEnable, true);
-    this.touchXSpeed = this.dealParam(options.touchXSpeed, 1);
-    this.touchYSpeed = this.dealParam(options.touchYSpeed, 1);
-    this.touchInertiaXDeceleration = this.dealParam(options.touchInertiaXDeceleration, Infinity);
-    this.touchInertiaYDeceleration = this.dealParam(options.touchInertiaYDeceleration, Infinity);
-    this.touchInertiaXMaxSpeed = this.dealParam(options.touchInertiaXMaxSpeed, this.touchInertiaXDeceleration);
-    this.touchInertiaYMaxSpeed = this.dealParam(options.touchInertiaYMaxSpeed, this.touchInertiaYDeceleration);
-    this.minScrollTop = this.dealParam(options.minScrollTop, 0);
-    this.minScrollLeft = this.dealParam(options.minScrollLeft, 0);
-    this.maxScrollTop = this.dealParam(options.maxScrollTop, Infinity);
-    this.maxScrollLeft = this.dealParam(options.maxScrollLeft, 0);
-  }
-
-  dealParam(param, defaultValue) {
-    if (param === undefined || param === null) {
-      return defaultValue;
-    } else {
-      return param;
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var events_1 = __webpack_require__(0);
+var model_1 = __webpack_require__(2);
+var util_1 = __webpack_require__(3);
+/**
+ * Scroll sensor main class
+ * @event scroll Emit when scroll.
+ */
+var ScrollSensor = /** @class */ (function (_super) {
+    __extends(ScrollSensor, _super);
+    /**
+     * @param {HTMLElement} element The dom element to create the ScrollSensor instance.
+     * @param {OptionsInterface} options Options.
+     * @param {number} initialScrollTop
+     * @param {number} initialScrollLeft
+     */
+    function ScrollSensor(_a) {
+        var element = _a.element, _b = _a.options, options = _b === void 0 ? {} : _b, _c = _a.initialScrollTop, initialScrollTop = _c === void 0 ? 0 : _c, _d = _a.initialScrollLeft, initialScrollLeft = _d === void 0 ? 0 : _d;
+        var _this = _super.call(this) || this;
+        _this.mouseIsScrolling = false;
+        _this.mouseScrollEndInertiaUtil = new util_1.EndInertiaUtil();
+        _this.touchEndInertiaUtil = new util_1.EndInertiaUtil();
+        _this.handleMousewheel = function (event) {
+            if (!_this.options.mouseWheelIsEnable) {
+                return;
+            }
+            _this.move(event.deltaX * _this.options.mouseWheelXSpeed, event.deltaY * _this.options.mouseWheelYSpeed);
+        };
+        _this.handleMouseDown = function (event) {
+            if (!_this.options.mouseMoveIsEnable) {
+                return;
+            }
+            _this.mouseXLastPosition = event.clientX;
+            _this.mouseYLastPosition = event.clientY;
+            _this.mouseIsScrolling = true;
+            _this.mouseScrollEndInertiaUtil.stop();
+        };
+        _this.handleMouseMove = function (event) {
+            if (_this.mouseIsScrolling) {
+                var xDistance = _this.mouseXLastPosition - event.clientX;
+                var yDistance = _this.mouseYLastPosition - event.clientY;
+                _this.move(xDistance * _this.options.mouseMoveXSpeed, yDistance * _this.options.mouseMoveYSpeed);
+                _this.mouseXLastPosition = event.clientX;
+                _this.mouseYLastPosition = event.clientY;
+                _this.mouseScrollEndInertiaUtil.push(_this.scrollLeft, _this.scrollTop);
+            }
+        };
+        _this.handleMouseUp = function () {
+            _this.mouseIsScrolling = false;
+            _this.mouseScrollEndInertiaUtil.end();
+        };
+        _this.handleTouchStart = function (event) {
+            if (!_this.options.touchIsEnable) {
+                return;
+            }
+            _this.touchXLastPosition = Math.round(event.touches[0].clientX);
+            _this.touchYLastPosition = Math.round(event.touches[0].clientY);
+            _this.touchEndInertiaUtil.stop();
+        };
+        _this.handleTouchMove = function (event) {
+            if (!_this.options.touchIsEnable) {
+                return;
+            }
+            var clientX = Math.round(event.touches[0].clientX);
+            var clientY = Math.round(event.touches[0].clientY);
+            var xDistance = _this.touchXLastPosition - clientX;
+            var yDistance = _this.touchYLastPosition - clientY;
+            _this.move(xDistance, yDistance);
+            _this.touchXLastPosition = clientX;
+            _this.touchYLastPosition = clientY;
+            _this.touchEndInertiaUtil.push(_this.scrollLeft, _this.scrollTop);
+        };
+        _this.handleTouchEnd = function () {
+            _this.touchEndInertiaUtil.end();
+        };
+        _this.handleInertiaMove = function (event) {
+            _this.move(event.xDistance, event.yDistance);
+        };
+        if (!(element instanceof HTMLElement)) {
+            throw new Error('"element" param is must an instance of HTMLElement');
+        }
+        _this.setOptions(options);
+        _this.element = element;
+        _this.scrollTop = initialScrollTop;
+        _this.scrollLeft = initialScrollLeft;
+        _this.element.addEventListener('mousewheel', _this.handleMousewheel);
+        _this.element.addEventListener('mousedown', _this.handleMouseDown);
+        _this.element.addEventListener('mousemove', _this.handleMouseMove);
+        _this.element.addEventListener('mouseup', _this.handleMouseUp);
+        _this.element.addEventListener('touchstart', _this.handleTouchStart);
+        _this.element.addEventListener('touchmove', _this.handleTouchMove);
+        _this.element.addEventListener('touchend', _this.handleTouchEnd);
+        _this.mouseScrollEndInertiaUtil.on('inertiaMove', _this.handleInertiaMove);
+        _this.touchEndInertiaUtil.on('inertiaMove', _this.handleInertiaMove);
+        return _this;
     }
-  }
+    ScrollSensor.prototype.setOptions = function (options) {
+        if (options === void 0) { options = {}; }
+        this.options = new model_1.Options(options);
+        this.mouseScrollEndInertiaUtil.setXDecelerationPerSecond(this.options.mouseMoveInertiaXDeceleration);
+        this.mouseScrollEndInertiaUtil.setYDecelerationPerSecond(this.options.mouseMoveInertiaYDeceleration);
+        this.mouseScrollEndInertiaUtil.setXMaxSpeed(this.options.mouseMoveInertiaXMaxSpeed);
+        this.mouseScrollEndInertiaUtil.setYMaxSpeed(this.options.mouseMoveInertiaYMaxSpeed);
+        this.touchEndInertiaUtil.setXDecelerationPerSecond(this.options.touchInertiaXDeceleration);
+        this.touchEndInertiaUtil.setYDecelerationPerSecond(this.options.touchInertiaYDeceleration);
+        this.touchEndInertiaUtil.setXMaxSpeed(this.options.touchInertiaXMaxSpeed);
+        this.touchEndInertiaUtil.setYMaxSpeed(this.options.touchInertiaYMaxSpeed);
+    };
+    Object.defineProperty(ScrollSensor.prototype, "scrollTop", {
+        get: function () {
+            return this._scrollTop;
+        },
+        set: function (scrollTop) {
+            if (scrollTop < this.options.minScrollTop) {
+                this._scrollTop = this.options.minScrollTop;
+            }
+            else if (scrollTop > this.options.maxScrollTop) {
+                this._scrollTop = this.options.maxScrollTop;
+            }
+            else {
+                this._scrollTop = scrollTop;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ScrollSensor.prototype, "scrollLeft", {
+        get: function () {
+            return this._scrollLeft;
+        },
+        set: function (scrollLeft) {
+            if (scrollLeft < this.options.minScrollLeft) {
+                this._scrollLeft = this.options.minScrollLeft;
+            }
+            else if (scrollLeft > this.options.maxScrollLeft) {
+                this._scrollLeft = this.options.maxScrollLeft;
+            }
+            else {
+                this._scrollLeft = scrollLeft;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Release the resources.
+     */
+    ScrollSensor.prototype.destroy = function () {
+        this.mouseScrollEndInertiaUtil.removeAllListeners();
+        this.touchEndInertiaUtil.removeAllListeners();
+        this.element.removeEventListener('mousewheel', this.handleMousewheel);
+        this.element.removeEventListener('mousedown', this.handleMouseDown);
+        this.element.removeEventListener('mousemove', this.handleMouseMove);
+        this.element.removeEventListener('mouseup', this.handleMouseUp);
+        this.element.removeEventListener('touchstart', this.handleTouchStart);
+        this.element.removeEventListener('touchmove', this.handleTouchMove);
+        this.element.removeEventListener('touchend', this.handleTouchEnd);
+    };
+    ScrollSensor.prototype.move = function (xDistance, yDistance) {
+        this.scrollLeft = this.scrollLeft + xDistance;
+        this.scrollTop = this.scrollTop + yDistance;
+        var eventObject = new model_1.ScrollEventObject(this.scrollTop, this.scrollLeft, yDistance, xDistance);
+        this.emit('scroll', eventObject);
+    };
+    return ScrollSensor;
+}(events_1.EventEmitter));
+exports.ScrollSensor = ScrollSensor;
 
-}
-class ScrollEventObject {
-  constructor(scrollTop, scrollLeft, scrollY, scrollX) {
-    this.scrollTop = scrollTop;
-    this.scrollLeft = scrollLeft;
-    this.scrollY = scrollY;
-    this.scrollX = scrollX;
-  }
 
-}
-// CONCATENATED MODULE: ./src/util.ts
-function util_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Options = /** @class */ (function () {
+    function Options(options) {
+        if (options === void 0) { options = {}; }
+        this.mouseWheelIsEnable = this.dealParam(options.mouseWheelIsEnable, true);
+        this.mouseWheelXSpeed = this.dealParam(options.mouseWheelXSpeed, 1);
+        this.mouseWheelYSpeed = this.dealParam(options.mouseWheelYSpeed, 1);
+        this.mouseMoveIsEnable = this.dealParam(options.mouseMoveIsEnable, true);
+        this.mouseMoveXSpeed = this.dealParam(options.mouseMoveXSpeed, 1);
+        this.mouseMoveYSpeed = this.dealParam(options.mouseMoveYSpeed, 1);
+        this.mouseMoveInertiaXDeceleration = this.dealParam(options.mouseMoveInertiaXDeceleration, Infinity);
+        this.mouseMoveInertiaYDeceleration = this.dealParam(options.mouseMoveInertiaYDeceleration, Infinity);
+        this.mouseMoveInertiaXMaxSpeed = this.dealParam(options.mouseMoveInertiaXMaxSpeed, this.mouseMoveInertiaXDeceleration);
+        this.mouseMoveInertiaYMaxSpeed = this.dealParam(options.mouseMoveInertiaYMaxSpeed, this.mouseMoveInertiaYDeceleration);
+        this.touchIsEnable = this.dealParam(options.touchIsEnable, true);
+        this.touchXSpeed = this.dealParam(options.touchXSpeed, 1);
+        this.touchYSpeed = this.dealParam(options.touchYSpeed, 1);
+        this.touchInertiaXDeceleration = this.dealParam(options.touchInertiaXDeceleration, Infinity);
+        this.touchInertiaYDeceleration = this.dealParam(options.touchInertiaYDeceleration, Infinity);
+        this.touchInertiaXMaxSpeed = this.dealParam(options.touchInertiaXMaxSpeed, this.touchInertiaXDeceleration);
+        this.touchInertiaYMaxSpeed = this.dealParam(options.touchInertiaYMaxSpeed, this.touchInertiaYDeceleration);
+        this.minScrollTop = this.dealParam(options.minScrollTop, 0);
+        this.minScrollLeft = this.dealParam(options.minScrollLeft, 0);
+        this.maxScrollTop = this.dealParam(options.maxScrollTop, Infinity);
+        this.maxScrollLeft = this.dealParam(options.maxScrollLeft, 0);
+    }
+    Options.prototype.dealParam = function (param, defaultValue) {
+        if (param === undefined || param === null) {
+            return defaultValue;
+        }
+        else {
+            return param;
+        }
+    };
+    return Options;
+}());
+exports.Options = Options;
+var ScrollEventObject = /** @class */ (function () {
+    function ScrollEventObject(
+    // current total distance to the top and left
+    scrollTop, scrollLeft, 
+    // latest scroll distance on the x-axis and y-axis
+    scrollY, scrollX) {
+        this.scrollTop = scrollTop;
+        this.scrollLeft = scrollLeft;
+        this.scrollY = scrollY;
+        this.scrollX = scrollX;
+    }
+    return ScrollEventObject;
+}());
+exports.ScrollEventObject = ScrollEventObject;
 
 
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var events_1 = __webpack_require__(0);
 /**
  * Get positive and negative sign of a number.
  */
-
 function getSign(num) {
-  if (num > 0) {
-    return 1;
-  } else if (num < 0) {
-    return -1;
-  } else if (num === 0) {
-    return 0;
-  } else {
-    return NaN;
-  }
-}
-
-class PositionStore {
-  constructor(endTimeRange) {
-    this.endTimeRange = endTimeRange;
-
-    util_defineProperty(this, "positions", []);
-  }
-
-  filterPositions() {
-    const now = new Date();
-    this.positions = this.positions.filter(item => {
-      return now.getTime() - item[0].getTime() <= this.endTimeRange;
-    });
-  }
-
-  push(position) {
-    if (this.positions.length && this.positions[this.positions.length - 1][1] * position < 0) {
-      this.clear();
+    if (num > 0) {
+        return 1;
     }
-
-    this.positions.push([new Date(), position]);
-    this.filterPositions();
-  }
-
-  getEndSpeed() {
-    this.filterPositions();
-
-    if (this.positions.length === 0 || this.positions.length === 1) {
-      return 0;
+    else if (num < 0) {
+        return -1;
     }
-
-    const start = this.positions[0];
-    const end = this.positions[this.positions.length - 1];
-    return (end[1] - start[1]) / ((end[0].getTime() - start[0].getTime()) / 1000);
-  }
-
-  clear() {
-    this.positions = [];
-  }
-
+    else if (num === 0) {
+        return 0;
+    }
+    else {
+        return NaN;
+    }
 }
+exports.getSign = getSign;
+var PositionStore = /** @class */ (function () {
+    function PositionStore(endTimeRange) {
+        this.endTimeRange = endTimeRange;
+        this.positions = [];
+    }
+    PositionStore.prototype.filterPositions = function () {
+        var _this = this;
+        var now = new Date();
+        this.positions = this.positions.filter(function (item) {
+            return now.getTime() - item[0].getTime() <= _this.endTimeRange;
+        });
+    };
+    PositionStore.prototype.push = function (position) {
+        if (this.positions.length && (this.positions[this.positions.length - 1][1] * position < 0)) {
+            this.clear();
+        }
+        this.positions.push([new Date(), position]);
+        this.filterPositions();
+    };
+    PositionStore.prototype.getEndSpeed = function () {
+        this.filterPositions();
+        if (this.positions.length === 0 || this.positions.length === 1) {
+            return 0;
+        }
+        var start = this.positions[0];
+        var end = this.positions[this.positions.length - 1];
+        return (end[1] - start[1]) / ((end[0].getTime() - start[0].getTime()) / 1000);
+    };
+    PositionStore.prototype.clear = function () {
+        this.positions = [];
+    };
+    return PositionStore;
+}());
 /**
  * A util to deal scroll end inertia.
  * @event inertiaMove Be emitted continuously after call "end" method, until the speed drop to 0.
  *         Its event object has four property:xSpeed,ySpeed,xDistance,yDistance.
  */
-
-
-class util_EndInertiaUtil extends external_events_["EventEmitter"] {
-  constructor(endTimeRange = 200, xDecelerationPerSecond = Infinity, yDecelerationPerSecond = Infinity, xMaxSpeed = Infinity, yMaxSpeed = Infinity) {
-    super();
-    this.xDecelerationPerSecond = xDecelerationPerSecond;
-    this.yDecelerationPerSecond = yDecelerationPerSecond;
-    this.xMaxSpeed = xMaxSpeed;
-    this.yMaxSpeed = yMaxSpeed;
-
-    util_defineProperty(this, "xPositionStore", void 0);
-
-    util_defineProperty(this, "yPositionStore", void 0);
-
-    util_defineProperty(this, "timer", void 0);
-
-    this.xPositionStore = new PositionStore(endTimeRange);
-    this.yPositionStore = new PositionStore(endTimeRange);
-  }
-
-  setEndTimeRange(endTimeRange) {
-    this.xPositionStore.endTimeRange = endTimeRange;
-    this.yPositionStore.endTimeRange = endTimeRange;
-  }
-
-  setXDecelerationPerSecond(xDecelerationPerSecond) {
-    this.xDecelerationPerSecond = xDecelerationPerSecond;
-  }
-
-  setYDecelerationPerSecond(yDecelerationPerSecond) {
-    this.yDecelerationPerSecond = yDecelerationPerSecond;
-  }
-
-  setXMaxSpeed(xMaxSpeed) {
-    this.xMaxSpeed = xMaxSpeed;
-  }
-
-  setYMaxSpeed(yMaxSpeed) {
-    this.yMaxSpeed = yMaxSpeed;
-  }
-  /**
-   * Push a move position.It will be used to calculate the end speed.
-   */
-
-
-  push(positionX, positionY) {
-    this.xPositionStore.push(positionX);
-    this.yPositionStore.push(positionY);
-  }
-  /**
-   * End a series of position push and start to calculate inertia move distance and emit "inertiaMove" event.
-   */
-
-
-  end() {
-    if (this.timer) {
-      window.clearInterval(this.timer);
+var EndInertiaUtil = /** @class */ (function (_super) {
+    __extends(EndInertiaUtil, _super);
+    function EndInertiaUtil(endTimeRange, xDecelerationPerSecond, yDecelerationPerSecond, xMaxSpeed, yMaxSpeed) {
+        if (endTimeRange === void 0) { endTimeRange = 200; }
+        if (xDecelerationPerSecond === void 0) { xDecelerationPerSecond = Infinity; }
+        if (yDecelerationPerSecond === void 0) { yDecelerationPerSecond = Infinity; }
+        if (xMaxSpeed === void 0) { xMaxSpeed = Infinity; }
+        if (yMaxSpeed === void 0) { yMaxSpeed = Infinity; }
+        var _this = _super.call(this) || this;
+        _this.xDecelerationPerSecond = xDecelerationPerSecond;
+        _this.yDecelerationPerSecond = yDecelerationPerSecond;
+        _this.xMaxSpeed = xMaxSpeed;
+        _this.yMaxSpeed = yMaxSpeed;
+        _this.xPositionStore = new PositionStore(endTimeRange);
+        _this.yPositionStore = new PositionStore(endTimeRange);
+        return _this;
     }
-
-    const originalXSpeed = this.dealOriginalSpeed(this.xPositionStore.getEndSpeed(), this.xMaxSpeed);
-    const originalYSpeed = this.dealOriginalSpeed(this.yPositionStore.getEndSpeed(), this.yMaxSpeed);
-    const xDecelerationPerSecond = getSign(originalXSpeed) === 0 ? 0 : getSign(originalXSpeed) * this.xDecelerationPerSecond;
-    const yDecelerationPerSecond = getSign(originalYSpeed) === 0 ? 0 : getSign(originalYSpeed) * this.yDecelerationPerSecond;
-    let xSpeed = originalXSpeed;
-    let ySpeed = originalYSpeed;
-    let time = Date.now();
-    this.timer = setInterval(() => {
-      const pastSeconds = (Date.now() - time) / 1000;
-
-      if (pastSeconds === 0) {
-        return;
-      }
-
-      xSpeed = xSpeed - pastSeconds * xDecelerationPerSecond;
-      ySpeed = ySpeed - pastSeconds * yDecelerationPerSecond;
-      time = Date.now();
-
-      if (xSpeed * originalXSpeed > 0 || ySpeed * originalYSpeed > 0) {
-        if (isNaN(xSpeed * originalXSpeed) || xSpeed * originalXSpeed < 0) {
-          xSpeed = 0;
+    EndInertiaUtil.prototype.setEndTimeRange = function (endTimeRange) {
+        this.xPositionStore.endTimeRange = endTimeRange;
+        this.yPositionStore.endTimeRange = endTimeRange;
+    };
+    EndInertiaUtil.prototype.setXDecelerationPerSecond = function (xDecelerationPerSecond) {
+        this.xDecelerationPerSecond = xDecelerationPerSecond;
+    };
+    EndInertiaUtil.prototype.setYDecelerationPerSecond = function (yDecelerationPerSecond) {
+        this.yDecelerationPerSecond = yDecelerationPerSecond;
+    };
+    EndInertiaUtil.prototype.setXMaxSpeed = function (xMaxSpeed) {
+        this.xMaxSpeed = xMaxSpeed;
+    };
+    EndInertiaUtil.prototype.setYMaxSpeed = function (yMaxSpeed) {
+        this.yMaxSpeed = yMaxSpeed;
+    };
+    /**
+     * Push a move position.It will be used to calculate the end speed.
+     */
+    EndInertiaUtil.prototype.push = function (positionX, positionY) {
+        this.xPositionStore.push(positionX);
+        this.yPositionStore.push(positionY);
+    };
+    /**
+     * End a series of position push and start to calculate inertia move distance and emit "inertiaMove" event.
+     */
+    EndInertiaUtil.prototype.end = function () {
+        var _this = this;
+        if (this.timer) {
+            window.clearInterval(this.timer);
         }
-
-        if (isNaN(xSpeed * originalYSpeed) || ySpeed * originalYSpeed < 0) {
-          ySpeed = 0;
-        }
-
-        this.emit('inertiaMove', {
-          xSpeed,
-          ySpeed,
-          xDistance: xSpeed * pastSeconds,
-          yDistance: ySpeed * pastSeconds
+        var originalXSpeed = this.dealOriginalSpeed(this.xPositionStore.getEndSpeed(), this.xMaxSpeed);
+        var originalYSpeed = this.dealOriginalSpeed(this.yPositionStore.getEndSpeed(), this.yMaxSpeed);
+        var xDecelerationPerSecond = getSign(originalXSpeed) === 0 ? 0 : getSign(originalXSpeed) * this.xDecelerationPerSecond;
+        var yDecelerationPerSecond = getSign(originalYSpeed) === 0 ? 0 : getSign(originalYSpeed) * this.yDecelerationPerSecond;
+        var xSpeed = originalXSpeed;
+        var ySpeed = originalYSpeed;
+        var time = Date.now();
+        this.timer = setInterval(function () {
+            var pastSeconds = (Date.now() - time) / 1000;
+            if (pastSeconds === 0) {
+                return;
+            }
+            xSpeed = xSpeed - pastSeconds * xDecelerationPerSecond;
+            ySpeed = ySpeed - pastSeconds * yDecelerationPerSecond;
+            time = Date.now();
+            if (xSpeed * originalXSpeed > 0 || ySpeed * originalYSpeed > 0) {
+                if (isNaN(xSpeed * originalXSpeed) || xSpeed * originalXSpeed < 0) {
+                    xSpeed = 0;
+                }
+                if (isNaN(xSpeed * originalYSpeed) || ySpeed * originalYSpeed < 0) {
+                    ySpeed = 0;
+                }
+                _this.emit('inertiaMove', {
+                    xSpeed: xSpeed,
+                    ySpeed: ySpeed,
+                    xDistance: xSpeed * pastSeconds,
+                    yDistance: ySpeed * pastSeconds,
+                });
+            }
+            else {
+                _this.stop();
+            }
         });
-      } else {
-        this.stop();
-      }
-    });
-  }
-  /**
-   * Stop the inertia move.
-   * It also stop to emit the "inertiaMove" event.
-   */
+    };
+    /**
+     * Stop the inertia move.
+     * It also stop to emit the "inertiaMove" event.
+     */
+    EndInertiaUtil.prototype.stop = function () {
+        this.xPositionStore.clear();
+        this.yPositionStore.clear();
+        window.clearInterval(this.timer);
+        this.timer = null;
+    };
+    EndInertiaUtil.prototype.dealOriginalSpeed = function (speed, maxSpeed) {
+        if (Math.abs(speed) > maxSpeed) {
+            return getSign(speed) * maxSpeed;
+        }
+        else {
+            return speed;
+        }
+    };
+    return EndInertiaUtil;
+}(events_1.EventEmitter));
+exports.EndInertiaUtil = EndInertiaUtil;
 
-
-  stop() {
-    this.xPositionStore.clear();
-    this.yPositionStore.clear();
-    window.clearInterval(this.timer);
-    this.timer = null;
-  }
-
-  dealOriginalSpeed(speed, maxSpeed) {
-    if (Math.abs(speed) > maxSpeed) {
-      return getSign(speed) * maxSpeed;
-    } else {
-      return speed;
-    }
-  }
-
-}
-// CONCATENATED MODULE: ./src/scroll-sensor.ts
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ScrollSensor", function() { return scroll_sensor_ScrollSensor; });
-function scroll_sensor_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-
-/**
- * Scroll sensor main class
- * @event scroll Emit when scroll.
- */
-
-class scroll_sensor_ScrollSensor extends external_events_["EventEmitter"] {
-  /**
-   * @param {HTMLElement} element The dom element to create the ScrollSensor instance.
-   * @param {OptionsInterface} options Options.
-   * @param {number} initialScrollTop
-   * @param {number} initialScrollLeft
-   */
-  constructor({
-    element,
-    options = {},
-    initialScrollTop = 0,
-    initialScrollLeft = 0
-  }) {
-    super();
-
-    scroll_sensor_defineProperty(this, "element", void 0);
-
-    scroll_sensor_defineProperty(this, "options", void 0);
-
-    scroll_sensor_defineProperty(this, "_scrollTop", void 0);
-
-    scroll_sensor_defineProperty(this, "_scrollLeft", void 0);
-
-    scroll_sensor_defineProperty(this, "mouseIsScrolling", false);
-
-    scroll_sensor_defineProperty(this, "mouseXLastPosition", void 0);
-
-    scroll_sensor_defineProperty(this, "mouseYLastPosition", void 0);
-
-    scroll_sensor_defineProperty(this, "mouseScrollEndInertiaUtil", new util_EndInertiaUtil());
-
-    scroll_sensor_defineProperty(this, "touchXLastPosition", void 0);
-
-    scroll_sensor_defineProperty(this, "touchYLastPosition", void 0);
-
-    scroll_sensor_defineProperty(this, "touchEndInertiaUtil", new util_EndInertiaUtil());
-
-    scroll_sensor_defineProperty(this, "handleMousewheel", event => {
-      if (!this.options.mouseWheelIsEnable) {
-        return;
-      }
-
-      this.move(event.deltaX * this.options.mouseWheelXSpeed, event.deltaY * this.options.mouseWheelYSpeed);
-    });
-
-    scroll_sensor_defineProperty(this, "handleMouseDown", event => {
-      if (!this.options.mouseMoveIsEnable) {
-        return;
-      }
-
-      this.mouseXLastPosition = event.clientX;
-      this.mouseYLastPosition = event.clientY;
-      this.mouseIsScrolling = true;
-      this.mouseScrollEndInertiaUtil.stop();
-    });
-
-    scroll_sensor_defineProperty(this, "handleMouseMove", event => {
-      if (this.mouseIsScrolling) {
-        const xDistance = this.mouseXLastPosition - event.clientX;
-        const yDistance = this.mouseYLastPosition - event.clientY;
-        this.move(xDistance * this.options.mouseMoveXSpeed, yDistance * this.options.mouseMoveYSpeed);
-        this.mouseXLastPosition = event.clientX;
-        this.mouseYLastPosition = event.clientY;
-        this.mouseScrollEndInertiaUtil.push(this.scrollLeft, this.scrollTop);
-      }
-    });
-
-    scroll_sensor_defineProperty(this, "handleMouseUp", () => {
-      this.mouseIsScrolling = false;
-      this.mouseScrollEndInertiaUtil.end();
-    });
-
-    scroll_sensor_defineProperty(this, "handleTouchStart", event => {
-      if (!this.options.touchIsEnable) {
-        return;
-      }
-
-      this.touchXLastPosition = Math.round(event.touches[0].clientX);
-      this.touchYLastPosition = Math.round(event.touches[0].clientY);
-      this.touchEndInertiaUtil.stop();
-    });
-
-    scroll_sensor_defineProperty(this, "handleTouchMove", event => {
-      if (!this.options.touchIsEnable) {
-        return;
-      }
-
-      const clientX = Math.round(event.touches[0].clientX);
-      const clientY = Math.round(event.touches[0].clientY);
-      const xDistance = this.touchXLastPosition - clientX;
-      const yDistance = this.touchYLastPosition - clientY;
-      this.move(xDistance, yDistance);
-      this.touchXLastPosition = clientX;
-      this.touchYLastPosition = clientY;
-      this.touchEndInertiaUtil.push(this.scrollLeft, this.scrollTop);
-    });
-
-    scroll_sensor_defineProperty(this, "handleTouchEnd", () => {
-      this.touchEndInertiaUtil.end();
-    });
-
-    scroll_sensor_defineProperty(this, "handleInertiaMove", event => {
-      this.move(event.xDistance, event.yDistance);
-    });
-
-    if (!(element instanceof HTMLElement)) {
-      throw new Error('"element" param is must an instance of HTMLElement');
-    }
-
-    this.setOptions(options);
-    this.element = element;
-    this.scrollTop = initialScrollTop;
-    this.scrollLeft = initialScrollLeft;
-    this.element.addEventListener('mousewheel', this.handleMousewheel);
-    this.element.addEventListener('mousedown', this.handleMouseDown);
-    this.element.addEventListener('mousemove', this.handleMouseMove);
-    this.element.addEventListener('mouseup', this.handleMouseUp);
-    this.element.addEventListener('touchstart', this.handleTouchStart);
-    this.element.addEventListener('touchmove', this.handleTouchMove);
-    this.element.addEventListener('touchend', this.handleTouchEnd);
-    this.mouseScrollEndInertiaUtil.on('inertiaMove', this.handleInertiaMove);
-    this.touchEndInertiaUtil.on('inertiaMove', this.handleInertiaMove);
-  }
-
-  setOptions(options = {}) {
-    this.options = new Options(options);
-    this.mouseScrollEndInertiaUtil.setXDecelerationPerSecond(this.options.mouseMoveInertiaXDeceleration);
-    this.mouseScrollEndInertiaUtil.setYDecelerationPerSecond(this.options.mouseMoveInertiaYDeceleration);
-    this.mouseScrollEndInertiaUtil.setXMaxSpeed(this.options.mouseMoveInertiaXMaxSpeed);
-    this.mouseScrollEndInertiaUtil.setYMaxSpeed(this.options.mouseMoveInertiaYMaxSpeed);
-    this.touchEndInertiaUtil.setXDecelerationPerSecond(this.options.touchInertiaXDeceleration);
-    this.touchEndInertiaUtil.setYDecelerationPerSecond(this.options.touchInertiaYDeceleration);
-    this.touchEndInertiaUtil.setXMaxSpeed(this.options.touchInertiaXMaxSpeed);
-    this.touchEndInertiaUtil.setYMaxSpeed(this.options.touchInertiaYMaxSpeed);
-  }
-
-  set scrollTop(scrollTop) {
-    if (scrollTop < this.options.minScrollTop) {
-      this._scrollTop = this.options.minScrollTop;
-    } else if (scrollTop > this.options.maxScrollTop) {
-      this._scrollTop = this.options.maxScrollTop;
-    } else {
-      this._scrollTop = scrollTop;
-    }
-  }
-
-  get scrollTop() {
-    return this._scrollTop;
-  }
-
-  set scrollLeft(scrollLeft) {
-    if (scrollLeft < this.options.minScrollLeft) {
-      this._scrollLeft = this.options.minScrollLeft;
-    } else if (scrollLeft > this.options.maxScrollLeft) {
-      this._scrollLeft = this.options.maxScrollLeft;
-    } else {
-      this._scrollLeft = scrollLeft;
-    }
-  }
-
-  get scrollLeft() {
-    return this._scrollLeft;
-  }
-  /**
-   * Release the resources.
-   */
-
-
-  destroy() {
-    this.mouseScrollEndInertiaUtil.removeAllListeners();
-    this.touchEndInertiaUtil.removeAllListeners();
-    this.element.removeEventListener('mousewheel', this.handleMousewheel);
-    this.element.removeEventListener('mousedown', this.handleMouseDown);
-    this.element.removeEventListener('mousemove', this.handleMouseMove);
-    this.element.removeEventListener('mouseup', this.handleMouseUp);
-    this.element.removeEventListener('touchstart', this.handleTouchStart);
-    this.element.removeEventListener('touchmove', this.handleTouchMove);
-    this.element.removeEventListener('touchend', this.handleTouchEnd);
-  }
-
-  move(xDistance, yDistance) {
-    this.scrollLeft = this.scrollLeft + xDistance;
-    this.scrollTop = this.scrollTop + yDistance;
-    const eventObject = new ScrollEventObject(this.scrollTop, this.scrollLeft, yDistance, xDistance);
-    this.emit('scroll', eventObject);
-  }
-
-}
 
 /***/ })
 /******/ ]);
